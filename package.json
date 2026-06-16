@@ -1,0 +1,10 @@
+{
+  "name": "relay",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:cli": "npm run dev --workspace=packages/cli",
+    "dev:ext": "npm run dev --workspace=packages/vscode-extension"
+  }
+}
