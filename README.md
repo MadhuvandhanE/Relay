@@ -1,49 +1,147 @@
-# 🔗 Relay
+# ⚡ Relay
 
-Persistent, structured project context that survives AI assistant session limits.
+**Persistent AI context across session limits and AI tools.**
 
-## The Problem
-AI coding assistants have isolated and short-lived memories. When you hit a context limit or switch from Claude to ChatGPT or Gemini, the new session starts with zero knowledge, leading to conflicting code, tedious re-explaining, and wasted developer hours. Relay keeps your project's context stored locally, outside your repository, ready to inject into any new session.
+You're mid-build. Claude hits its limit. You switch to GPT. GPT has no idea what you're building, what's already done, or what you were just doing. You spend 20 minutes re-explaining.
 
-## Installation & Quickstart
+Relay fixes this. One command. Your new AI knows exactly where you left off.
 
-Install the CLI globally:
+---
+
+## Install
+
 ```bash
 npm install -g @relay/cli
 ```
 
-Initialize, scan, and feed your AI in 5 commands:
-```bash
-# 1. Initialize Relay inside your project root
-relay init
-
-# 2. Scan folder structure & stack to populate context
-relay sync
-
-# 3. Create a checkpoint snapshot before a big refactor
-relay checkpoint "pre-refactor baseline"
-
-# 4. Copy compressed context to clipboard, ready to paste to any AI
-relay inject
-
-# 5. List all saved checkpoints
-relay checkpoint --list
-```
+---
 
 ## How It Works
 
-### The 4 Commands
-- **`relay init`**: Runs an interactive CLI setup to establish your project's high-level purpose, tech stack, and API key configs. Creates the local workspace metadata storage.
-- **`relay sync`**: Reads directories and packages, generates a folder tree, detects dependencies, and infers active work by sorting files by modification time. Updates dynamic sections while leaving human-written notes untouched.
-- **`relay inject`**: Grabs your project's context, compresses it using Claude Haiku (or local priority-based truncation if offline), wraps it in clear AI demarcations, and copies it to your clipboard.
-- **`relay checkpoint <message>`**: Creates a timestamped snapshot of your context file, logging milestones in a timeline.
+Relay maintains a `PROJECT.md` for every project — stored globally on your machine, outside any repo. It reads your git history, file structure, and tech stack automatically. When you switch AIs, `relay inject` outputs a compressed context block ready to paste.
 
-### Storage Paths
-Relay keeps your repository clean by saving all local settings outside the git tree:
-- **Windows**: `%APPDATA%/relay/`
-- **macOS/Linux**: `~/.relay/`
+```bash
+relay init        # set up relay for this project (one time)
+relay sync        # update context with latest file structure + git activity  
+relay inject      # copy context to clipboard, ready to paste into any AI
+relay checkpoint  # save a named snapshot of current state
+relay list        # show all projects tracked by relay
+```
+
+---
+
+## Demo
+
+```
+$ relay inject
+
+? What's happening right now?
+❯ ⚡ Hit a limit — continue exactly where I left off
+  🚀 Starting fresh — orient the AI to my project
+  🐛 Hit a bug — include error context
+
+--- RELAY CONTEXT: my-project ---
+
+## What We're Building
+A Chrome extension that passively captures browser content and enables 
+AI-powered recall using personal browsing history as context.
+
+## What's In Progress
+- YouTube transcript extraction via Supabase edge function
+- Testing with npm:youtube-transcript package
+
+## Recent Activity (Git)
+Branch: main
+- 2 hours ago: "fix edge function 501 stub" → youtube-transcript/index.ts
+- yesterday: "add pgvector similarity search" → memories.sql, search.ts
+
+Uncommitted changes (2 files):
+- youtube-transcript/index.ts  +34 -71
+- background.js                +8 -3
+
+## Tech Stack
+TypeScript, React, Supabase, pgvector, Claude Haiku, Chrome Extension MV3
+
+--- END RELAY CONTEXT ---
+
+📋 Copied to clipboard!
+```
+
+Paste that into GPT, Gemini, Claude, Cursor — anything with a text box. Done.
+
+---
+
+## Storage
+
+Everything lives locally. Nothing leaves your machine.
+
+| OS | Path |
+|---|---|
+| Windows | `%APPDATA%\relay\` |
+| macOS / Linux | `~/.relay/` |
+
+Your repos stay clean. Relay never writes inside your project folders.
+
+---
+
+## Commands
+
+### `relay init`
+Interactive setup. Detects your tech stack, creates your project context file.
+
+### `relay sync`
+Scans your codebase and updates context automatically:
+- File structure (gitignore-aware)
+- Tech stack (reads all `package.json` in monorepos)
+- Recent git activity (last 7 commits, uncommitted changes, staged files)
+
+Preserves everything you've written manually.
+
+### `relay inject`
+Selects what to include based on your current intent:
+- **Continue** — focused on in-progress work and recent git changes
+- **New task** — big picture: architecture, conventions, what's working
+- **Debug** — git diff + error message + current state
+
+Optionally uses Claude Haiku for intelligent compression (`relay inject --ai`).
+Falls back to priority-based truncation if no API key is set.
+
+### `relay inject --bug`
+Skip the intent selector. Goes straight to debug mode and prompts for your error message.
+
+### `relay checkpoint "message"`
+Saves a timestamped snapshot of your current context. Use before big refactors or at the end of a session.
+
+```bash
+relay checkpoint "finished auth flow, moving to dashboard"
+relay checkpoint --list   # see all saved snapshots
+```
+
+### `relay list`
+Shows all projects tracked by Relay with last sync time and checkpoint count.
+
+---
+
+## VS Code Extension
+
+Install the Relay extension to get a sidebar panel with one-click access to all commands. Auto-syncs context when you save files.
 
 ---
 
 ## Contributing
-We welcome issues, PRs, and feedback! Please ensure TypeScript strict mode is followed and that your changes compile successfully with `npm run build` prior to submitting a pull request.
+
+PRs welcome. TypeScript strict mode required. Run `npm run build` before submitting — zero errors, zero warnings.
+
+```bash
+git clone https://github.com/YOUR_USERNAME/relay
+cd relay
+npm install
+npm run build
+node packages/cli/dist/index.js --help
+```
+
+---
+
+## License
+
+MIT
