@@ -1,0 +1,39 @@
+{
+  "name": "relay-vscode",
+  "displayName": "Relay",
+  "description": "Persistent AI context across sessions",
+  "version": "0.1.0",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "relay.init", "title": "Relay: Initialize Project" },
+      { "command": "relay.sync", "title": "Relay: Sync Context" },
+      { "command": "relay.inject", "title": "Relay: Copy Context to Clipboard" },
+      { "command": "relay.checkpoint", "title": "Relay: Save Checkpoint" }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        { "id": "relay", "title": "Relay", "icon": "$(database)" }
+      ]
+    },
+    "views": {
+      "relay": [
+        { "id": "relay.panel", "name": "Project Context" }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@relay/cli": "*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}
